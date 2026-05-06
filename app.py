@@ -6,12 +6,11 @@ from pypdf import PdfReader
 # Langchain imports
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_openai import ChatOpenAI
+from langchain_huggingface import HuggingFaceEmbeddings, HuggingFaceEndpoint
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 
-# Load environment variables (like OPENAI_API_KEY)
+# Load environment variables (like HUGGINGFACEHUB_API_TOKEN)
 load_dotenv()
 
 # --- Configuration & UI Setup ---
@@ -49,9 +48,13 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    """Sets up the retrieval chain with OpenAI and memory."""
-    # We use OpenAI for the actual answer generation
-    llm = ChatOpenAI(temperature=0.3, model="gpt-3.5-turbo")
+    """Sets up the retrieval chain with Hugging Face and memory."""
+    # We use a free open-source model from Hugging Face for answer generation
+    llm = HuggingFaceEndpoint(
+        repo_id="mistralai/Mistral-7B-Instruct-v0.2",
+        temperature=0.1,
+        max_new_tokens=512
+    )
     
     # Memory allows the LLM to remember the context of the conversation
     memory = ConversationBufferMemory(
@@ -83,8 +86,8 @@ with st.sidebar:
     if st.button("Process"):
         if not pdf_docs:
             st.warning("Please upload at least one PDF.")
-        elif not os.getenv("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY") == "your_openai_api_key_here":
-             st.error("Please set your OPENAI_API_KEY in the .env file.")
+        elif not os.getenv("HUGGINGFACEHUB_API_TOKEN") or os.getenv("HUGGINGFACEHUB_API_TOKEN") == "your_huggingface_token_here":
+             st.error("Please set your HUGGINGFACEHUB_API_TOKEN in the .env file.")
         else:
             with st.spinner("Processing..."):
                 # 1. Extract text from PDFs
