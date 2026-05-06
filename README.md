@@ -88,12 +88,12 @@ graph TD
 **2. "Walk me through the architecture. How does it work end-to-end?"**
 > "The pipeline has two main phases: Ingestion and Retrieval/Generation.
 > *   **Ingestion:** I use `PyPDF` to extract document text. Since LLMs have token limits, I chunk the text using LangChain's `RecursiveCharacterTextSplitter`. These chunks are passed through a local Hugging Face embedding model (`all-MiniLM-L6-v2`) to create high-dimensional vectors, which are indexed in a local FAISS database.
-> *   **Retrieval & Generation:** When a question is asked, it's embedded using the same model. FAISS performs a cosine similarity search to fetch the most relevant text chunks. I then inject the user's question, the retrieved chunks, and the conversational history into a Hugging Face LLM (like Mistral) using LangChain. The LLM then synthesizes a final answer strictly based on the provided context."
+> *   **Retrieval & Generation:** When a question is asked, it's embedded using the same model. FAISS performs a cosine similarity search to fetch the most relevant text chunks. I then inject the user's question, the retrieved chunks, and the conversational history into a Hugging Face LLM (like Zephyr) using LangChain. The LLM then synthesizes a final answer strictly based on the provided context."
 
 **3. "Why did you choose FAISS and Hugging Face over cloud alternatives like Pinecone or OpenAI?"**
 > "My goal was to build a highly capable, yet cost-efficient and open-source system. 
 > *   I chose **FAISS** because it operates locally in-memory, making it incredibly fast and completely free for individual or small-scale document analysis, avoiding the latency and costs of a hosted vector database. 
-> *   For the LLM and Embeddings, I used **Hugging Face**. By utilizing `MiniLM` locally and the Hugging Face Inference API for text generation (e.g., Mistral), I eliminated the vendor lock-in and quota limitations associated with paid APIs like OpenAI. This demonstrates an ability to build production-ready AI solutions without relying on expensive infrastructure."
+> *   For the LLM and Embeddings, I used **Hugging Face**. By utilizing `MiniLM` locally and the Hugging Face Inference API for text generation (e.g., Zephyr), I eliminated the vendor lock-in and quota limitations associated with paid APIs like OpenAI. This demonstrates an ability to build production-ready AI solutions without relying on expensive infrastructure."
 
 **4. "How do you handle conversational context?"**
 > "I implemented a memory buffer using Streamlit's `session_state` and LangChain's `ConversationBufferMemory`. When a follow-up question is asked, the system doesn't just search for the new question. It uses the LLM to analyze the chat history and rephrase the follow-up question into a standalone query. It then searches the FAISS index with that standalone query to ensure accurate retrieval."

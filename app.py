@@ -51,7 +51,7 @@ def get_conversation_chain(vectorstore):
     """Sets up the retrieval chain with Hugging Face and memory."""
     # We use a free open-source model from Hugging Face for answer generation
     llm = HuggingFaceEndpoint(
-        repo_id="mistralai/Mistral-7B-Instruct-v0.2",
+        repo_id="HuggingFaceH4/zephyr-7b-beta",
         temperature=0.1,
         max_new_tokens=512
     )
